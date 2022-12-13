@@ -5,27 +5,27 @@ import re
 
 class Preprocess:
     def __init__(self, path):
-        self.validPaths = [ f.path for f in os.scandir(path) if f.is_dir() ]
+        self.valid_paths = [ f.path for f in os.scandir(path) if f.is_dir() ]
         self.reject_names = ['9780062381828.xlsx', '9780545825030.xlsx', '9780547076690.xlsx', '9780142414538.xlsx']
-        self.validPathsComm = []
+        self.valid_paths_comm = []
         self.data = []
         self.main_data = pd.DataFrame()
     
-    def generateValidPaths(self):
-        for dir in self.validPaths:
+    def generate_valid_paths(self):
+        for dir in self.valid_paths:
             for f in os.scandir(dir):
                 if f.is_dir() and 'commentary' in f.path:
-                    self.validPathsComm.append(f.path)
+                    self.valid_paths_comm.append(f.path)
         
-    def generateRejectNames(self):
-        for subdir in self.validPathsComm:
+    def generate_reject_names(self):
+        for subdir in self.valid_paths_comm:
             for file in os.scandir(subdir):
                 df = pd.read_excel(file.path, usecols= list(range(1, 3)))
                 if len(df.columns) == 1:
                     self.reject_names.append(file.path[71:])
     
     def preprocess(self):    
-        for subdir in self.validPathsComm:
+        for subdir in self.valid_paths_comm:
             for file in os.scandir(subdir):
                 df = pd.read_excel(file.path, usecols= list(range(1, 3)))
                 
@@ -42,12 +42,12 @@ class Preprocess:
                 
                 self.data.append(df)
 
-    def returnMainDf(self):
-        self.generateValidPaths()
-        self.generateRejectNames()
+    def return_main_df(self):
+        self.generate_valid_paths()
+        self.generate_reject_names()
         self.preprocess()
         self.main_data = pd.concat(self.data)
 
 a = Preprocess('/content/drive/MyDrive/Stanford Project Book Bundles/')
-a.returnMainDf()
+a.return_main_df()
 print(a.main_data)
